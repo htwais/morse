@@ -46,6 +46,10 @@ func Decode(w io.Writer, r io.Reader) (err error) {
 			lastChar = 0
 
 		} else if r == '/' { // word or line separator
+			if toWrite, err = fromMorse(currentMorse); err != nil {
+				return err
+			}
+			currentMorse = ""
 			if lastChar == '/' {
 				toWrite = "\n"
 				lastChar = 0

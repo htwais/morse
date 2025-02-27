@@ -16,6 +16,7 @@ func TestDecode(t *testing.T) {
 		{"//", "\n"},
 		{"///", "\n "},
 		{".", "e"},
+		{"--..--/.--", ", w"},
 	} {
 		in := strings.NewReader(tc.morse)
 		var out bytes.Buffer
