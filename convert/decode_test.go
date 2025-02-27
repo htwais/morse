@@ -11,6 +11,10 @@ func TestDecode(t *testing.T) {
 		morse    string
 		expected string
 	}{
+		{"", ""},
+		{"/", " "},
+		{"//", "\n"},
+		{"///", "\n "},
 		{".", "e"},
 	} {
 		in := strings.NewReader(tc.morse)

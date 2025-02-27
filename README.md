@@ -10,7 +10,7 @@ A CLI tool that takes a text which contains either standard characters or Morse 
 build it with
 
     $ go build .
-
+    $ go test ./...
 
 # Usage
 
@@ -33,3 +33,14 @@ Morse input must not contain anything but
 Text input must be valid UTF8.
 Any character that is not representable as morse is silently ignored
 
+# TODO
+- Nonstandard punctuation?
+- non-Latin extensions?
+- Cut numbers? 
+- Prosigns
+- allow for other representations of dit and dah?
+- better error messages: add position in file and bad character
+- document errors
+- godoc example
+- error handling in Decode is far too complex
+- test output: convert space to hex to make it more readable
