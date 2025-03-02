@@ -36,3 +36,20 @@ func TestDecode(t *testing.T) {
 		}
 	}
 }
+
+func TestDecodeFail(t *testing.T) {
+	for i, tc := range []struct {
+		morse    string
+		expected string
+	}{
+		{"x", "invalid morse"},
+		{"-.-.--", "unknown morse"}, // nonstandard punctuation '!'
+	} {
+		var out bytes.Buffer
+		if err := Decode(&out, strings.NewReader(tc.morse)); err == nil {
+			t.Errorf("testcase %d failed: expected error '%s', got none", i, tc.expected)
+		} else if tc.expected != err.Error() {
+			t.Errorf("testcase %d failed: expected error '%s', got %v", i, tc.expected, err)
+		}
+	}
+}
