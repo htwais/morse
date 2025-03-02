@@ -24,6 +24,7 @@ func TestDecode(t *testing.T) {
 		{"//", "\n"},
 		{"///", "\n "},
 		{".", "e"},
+		{".--. . .-. -.-. .... ..-../..-..", "perché é"}, // é is "part of the ITU-R Morse code standard"
 		{"--..--/.--", ", w"},
 	} {
 		in := strings.NewReader(tc.morse)

@@ -58,6 +58,7 @@ var m2t map[string]rune = map[string]rune{
 	"-....-": '-',
 	".-..-.": '"',
 	".--.-.": '@',
+	"..-..":  'é',
 }
 
 // the reverse of m2t, to be created in init:
