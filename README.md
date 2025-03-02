@@ -11,6 +11,7 @@ build it with
 
     $ go build .
     $ go test ./...
+    $ go doc ./convert
 
 # Usage
 
@@ -31,7 +32,8 @@ Morse input must not contain anything but
 -   slash, ascii 0x2f, single slash to separate words, two slashes for newline
 
 Text input must be valid UTF8.
-Any character that is not representable as morse is silently ignored
+Any character that is not representable as morse is silently ignored.
+Conversion from morse to utf8 is all lower case.
 
 # TODO
 - Nonstandard punctuation?
