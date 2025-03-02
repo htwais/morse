@@ -42,5 +42,4 @@ Any character that is not representable as morse is silently ignored
 - better error messages: add position in file and bad character
 - document errors
 - godoc example
-- error handling in Decode is far too complex
 - test output: convert space to hex to make it more readable

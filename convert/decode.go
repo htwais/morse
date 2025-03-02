@@ -13,73 +13,91 @@ var ErrInvalidMorse = errors.New("invalid morse")
 // It fails on any non EOF error when reading from w.
 // And if w contains invalid UTF8.
 // Characters for which no morse code exists are silently dropped.
-func Decode(w io.Writer, r io.Reader) (err error) {
+func Decode(w io.Writer, r io.Reader) error {
 
 	// read char by char because of "not load the whole file into memory at once"
 	// reading tokens wouldn't work for huge files consisting only of non-space
-	br := bufio.NewReader(r)
-	currentMorse := "" // todo: or use bytes.Buffer?
-	var lastChar rune  // to detect 2nd slash
+	mr := morseReader{br: bufio.NewReader(r)}
 
-	for err == nil {
-		var r rune
+	for {
+		m, err := mr.readMorse()
+
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+
+		if err != nil {
+			return err
+		}
+
 		toWrite := ""
-
-		if r, _, err = br.ReadRune(); err != nil {
-			break // EOF or other error - checked outside loop
-
-		} else if r == '.' || r == '-' { // inside a morse code
-			if lastChar == '/' {
-				toWrite = " "
-				lastChar = 0
-			}
-			currentMorse += string(r)
-
-		} else if unicode.IsSpace(r) { // after a morse code
-			if toWrite, err = fromMorse(currentMorse); err != nil {
-				return err
-			}
-			if lastChar == '/' { // or is space after slash invalid?
-				toWrite = " " + toWrite
-			}
-			currentMorse = ""
-			lastChar = 0
-
-		} else if r == '/' { // word or line separator
-			if toWrite, err = fromMorse(currentMorse); err != nil {
-				return err
-			}
-			currentMorse = ""
-			if lastChar == '/' {
-				toWrite = "\n"
-				lastChar = 0
-			} else {
-				lastChar = r
-			}
-		} else {
-			return ErrInvalidMorse
+		if m == "/" {
+			toWrite = " "
+		} else if m == "//" {
+			toWrite = "\n"
+		} else if toWrite, err = fromMorse(m); err != nil {
+			return err
 		}
 
-		if toWrite != "" {
-			if _, err = io.WriteString(w, toWrite); err != nil {
-				return err
-			}
-		}
-	}
-
-	if !errors.Is(err, io.EOF) {
-		return err
-	}
-
-	if lastChar == '/' {
-		if _, err = io.WriteString(w, " "); err != nil {
+		if _, err = io.WriteString(w, toWrite); err != nil {
 			return err
 		}
 	}
+}
 
-	toWrite := ""
-	if toWrite, err = fromMorse(currentMorse); err == nil {
-		_, err = io.WriteString(w, toWrite)
+type morseReader struct {
+	br   *bufio.Reader
+	next string // holds incomplete morse sequence
+}
+
+// readMorse tries to read valid morse. If successful, it returns
+// a sequence of '.' and '-' or "/" or "//"
+func (mr *morseReader) readMorse() (string, error) {
+	for {
+		r, _, err := mr.br.ReadRune()
+
+		if err != nil {
+			// return EOF only if mr.next is not empty
+			// otherwise next call to readMorse will return EOF
+			if mr.next == "" {
+				return "", err
+			}
+			morse := mr.next
+			mr.next = ""
+			if errors.Is(err, io.EOF) {
+				err = nil
+			}
+			return morse, err
+		}
+
+		switch {
+		case r == '.' || r == '-': // inside morse sequence
+			if mr.next == "/" {
+				morse := mr.next
+				mr.next = string(r)
+				return morse, nil
+			}
+			mr.next += string(r)
+
+		case unicode.IsSpace(r): // character separator
+			morse := mr.next
+			mr.next = ""
+			if morse != "" {
+				return morse, nil
+			}
+
+		case r == '/': // whitespace
+			if mr.next == "/" {
+				morse := "//"
+				mr.next = ""
+				return morse, nil
+			}
+			morse := mr.next
+			mr.next = "/"
+			return morse, nil
+
+		default:
+			return mr.next, ErrInvalidMorse
+		}
 	}
-	return err
 }
