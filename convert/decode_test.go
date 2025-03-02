@@ -22,7 +22,9 @@ func TestDecode(t *testing.T) {
 		{"", ""},
 		{"/", " "},
 		{"//", "\n"},
-		{"///", "\n "},
+		{"///", "\n "}, // no Decode output - be liberal in what you accept (robustness principle)
+		{"// /", "\n "},
+		{"/ //", " \n"},
 		{".", "e"},
 		{".--. . .-. -.-. .... ..-../..-..", "perché é"}, // é is "part of the ITU-R Morse code standard"
 		{"--..--/.--", ", w"},

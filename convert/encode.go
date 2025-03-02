@@ -38,15 +38,13 @@ func Encode(w io.Writer, r io.Reader) error {
 		// todo: \r\n line endings will output space and // - is that ok?
 		toWrite := ""
 		if r == '\n' {
-			toWrite = lineSeparator
-			letterSeparator = ""
+			toWrite = letterSeparator + lineSeparator
 		} else if unicode.IsSpace(r) {
-			toWrite = wordSeparator
-			letterSeparator = ""
+			toWrite = letterSeparator + wordSeparator
 		} else {
 			toWrite = letterSeparator + toMorse(r)
-			letterSeparator = " "
 		}
+		letterSeparator = " "
 
 		if _, err = io.WriteString(w, toWrite); err != nil {
 			return err

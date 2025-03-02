@@ -22,9 +22,11 @@ func TestEncodeValid(t *testing.T) {
 	}{
 		{" ", "/"},
 		{"\n", "//"},
+		{"\n ", "// /"},
+		{" \n", "/ //"},
 		{"e", "."},
-		{"perché É", ".--. . .-. -.-. .... ..-../..-.."}, // é is "part of the ITU-R Morse code standard"
-		{"The quick brown fox jumps over the lazy dog", "- .... ./--.- ..- .. -.-. -.-/-... .-. --- .-- -./..-. --- -..-/.--- ..- -- .--. .../--- ...- . .-./- .... ./.-.. .- --.. -.--/-.. --- --."},
+		{"perché É", ".--. . .-. -.-. .... ..-.. / ..-.."}, // é is "part of the ITU-R Morse code standard"
+		{"The quick brown fox jumps over the lazy dog", "- .... . / --.- ..- .. -.-. -.- / -... .-. --- .-- -. / ..-. --- -..- / .--- ..- -- .--. ... / --- ...- . .-. / - .... . / .-.. .- --.. -.-- / -.. --- --."},
 	} {
 		in := strings.NewReader(tc.text)
 		var out bytes.Buffer
