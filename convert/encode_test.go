@@ -2,9 +2,17 @@ package convert
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 )
+
+func ExampleEncode() {
+	var buf bytes.Buffer
+	_ = Encode(&buf, strings.NewReader("SOS"))
+	fmt.Println(buf.String())
+	// Output: ... --- ...
+}
 
 // valid UTF8 must encode to morse without errors:
 func TestEncodeValid(t *testing.T) {

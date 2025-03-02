@@ -41,5 +41,4 @@ Any character that is not representable as morse is silently ignored
 - allow for other representations of dit and dah?
 - better error messages: add position in file and bad character
 - document errors
-- godoc example
 - test output: convert space to hex to make it more readable

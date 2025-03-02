@@ -2,9 +2,17 @@ package convert
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 )
+
+func ExampleDecode() {
+	var buf bytes.Buffer
+	_ = Decode(&buf, strings.NewReader("... --- ..."))
+	fmt.Println(buf.String())
+	// Output: sos
+}
 
 func TestDecode(t *testing.T) {
 	for i, tc := range []struct {
